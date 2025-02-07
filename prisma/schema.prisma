@@ -1,0 +1,150 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["views", "fullTextSearchPostgres"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Profile {
+  id       String        @id @default(cuid())
+  name     String
+  lastName String
+  cpf      String?       @unique
+  phone    String?
+  type     TypeProfile   @default(USER)
+  status   StatusProfile @default(INACTIVE)
+  userId   String        @unique @db.Uuid
+  clients  Client[]
+  Charge   Charge[]
+
+  @@map("profiles")
+}
+
+model Client {
+  id    String     @id @default(cuid())
+  name  String
+  phone String?
+  email String?
+  type  TypeClient @default(STANDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  Charge    Charge[]
+
+  @@map("clients")
+}
+
+model Charge {
+  id               String       @id @default(cuid())
+  amount           Float
+  day_tariff       Float?       @default(0)
+  tariff           Float?       @default(0)
+  dueDate          DateTime
+  additional_value Float?
+  discount_value   Float?
+  total_value      Float
+  description      String
+  status           StatusCharge @default(PENDING)
+  type             TypeCharge   @default(MONTHLY)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clientId  String
+  client    Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("charges")
+}
+
+enum TypeProfile {
+  ADMIN
+  USER
+
+  @@map("type_profiles")
+}
+
+enum StatusProfile {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+
+  @@map("status_profiles")
+}
+
+enum TypeClient {
+  DEFAULTER
+  STANDING
+
+  @@map("type_clients")
+}
+
+enum StatusCharge {
+  PENDING
+  PENDING_PARTIAL
+  PAID
+  OVERDUE
+
+  @@map("status_charges")
+}
+
+enum TypeCharge {
+  MONTHLY
+  YEARLY
+
+  @@map("type_charges")
+}
+
+view AuthUser {
+  instance_id                 String?   @db.Uuid
+  id                          String    @id @unique @db.Uuid
+  aud                         String?   @db.VarChar(255)
+  role                        String?   @db.VarChar(255)
+  email                       String?   @db.VarChar(255)
+  encrypted_password          String?   @db.VarChar(255)
+  email_confirmed_at          DateTime? @db.Timestamptz(6)
+  invited_at                  DateTime? @db.Timestamptz(6)
+  confirmation_token          String?   @db.VarChar(255)
+  confirmation_sent_at        DateTime? @db.Timestamptz(6)
+  recovery_token              String?   @db.VarChar(255)
+  recovery_sent_at            DateTime? @db.Timestamptz(6)
+  email_change_token_new      String?   @db.VarChar(255)
+  email_change                String?   @db.VarChar(255)
+  email_change_sent_at        DateTime? @db.Timestamptz(6)
+  last_sign_in_at             DateTime? @db.Timestamptz(6)
+  raw_app_meta_data           Json?
+  raw_user_meta_data          Json?
+  is_super_admin              Boolean?
+  created_at                  DateTime? @db.Timestamptz(6)
+  updated_at                  DateTime? @db.Timestamptz(6)
+  phone                       String?   @unique
+  phone_confirmed_at          DateTime? @db.Timestamptz(6)
+  phone_change                String?   @default("")
+  phone_change_token          String?   @default("") @db.VarChar(255)
+  phone_change_sent_at        DateTime? @db.Timestamptz(6)
+  confirmed_at                DateTime? @default(dbgenerated("LEAST(email_confirmed_at, phone_confirmed_at)")) @db.Timestamptz(6)
+  email_change_token_current  String?   @default("") @db.VarChar(255)
+  email_change_confirm_status Int?      @default(0) @db.SmallInt
+  banned_until                DateTime? @db.Timestamptz(6)
+  reauthentication_token      String?   @default("") @db.VarChar(255)
+  reauthentication_sent_at    DateTime? @db.Timestamptz(6)
+  is_sso_user                 Boolean   @default(false)
+  deleted_at                  DateTime? @db.Timestamptz(6)
+
+  @@index([instance_id])
+  @@map("auth_users")
+}
