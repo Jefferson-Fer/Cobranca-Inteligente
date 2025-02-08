@@ -36,9 +36,6 @@ export type SignUpConfirmationSchemaType = z.infer<
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email({ message: 'Informe um e-mail válido' }),
-  token: z
-    .string({ required_error: 'Você precisa resolver o captcha' })
-    .optional(),
 })
 
 export type FogotPasswordSchemaType = z.infer<typeof forgotPasswordSchema>

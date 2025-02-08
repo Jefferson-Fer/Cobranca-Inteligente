@@ -75,7 +75,14 @@ export default function SigninForm() {
           </Button>
         </form>
       </Form>
-      <div className="flex items-center justify-center mt-2 gap-2">
+      <ButtonLink
+        variant="link"
+        href="/recuperar-senha"
+        className="w-full justify-end text-xs underline"
+      >
+        Esqueceu sua senha?
+      </ButtonLink>
+      <div className="flex items-center justify-center gap-2">
         <Text scale="sm" variant="body">
           Não tem uma conta?
         </Text>

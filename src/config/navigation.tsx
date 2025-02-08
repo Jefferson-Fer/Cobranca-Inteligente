@@ -11,19 +11,9 @@ export const ContaNavigation = [
   { key: 'dashboard', label: 'Dashboard', href: '/conta' },
   { key: 'costumers', label: 'Clientes', href: '/conta/clientes' },
   {
-    key: 'costumers-defaulter',
-    label: 'Inadimplentes',
-    href: '/conta/clientes/inadimplentes',
-  },
-  {
-    key: 'charges',
-    label: 'Cobranças',
-    href: '/conta/cobrancas',
-  },
-  {
     key: 'charges-monthly',
     label: 'Mensalidades',
-    href: '/conta/cobrancas/mensais',
+    href: '/conta/cobrancas/mensalidades',
   },
   {
     key: 'charges-installments',

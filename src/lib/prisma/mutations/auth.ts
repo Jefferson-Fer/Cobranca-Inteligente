@@ -15,7 +15,7 @@ export const forgotPasswordQuery = async ({
 }: validators.FogotPasswordSchemaType) => {
   const supabase = await createServerClient()
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${getURL()}/loja/nova-senha`,
+    redirectTo: `${getURL()}/nova-senha`,
     captchaToken: token,
   })
 
