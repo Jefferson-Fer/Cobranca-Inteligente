@@ -11,12 +11,10 @@ import { prisma } from '..'
 
 export const forgotPasswordQuery = async ({
   email,
-  token,
 }: validators.FogotPasswordSchemaType) => {
   const supabase = await createServerClient()
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${getURL()}/nova-senha`,
-    captchaToken: token,
   })
 
   if (error) {
