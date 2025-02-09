@@ -21,9 +21,10 @@ export const ForgotPasswordForm = () => {
   const [isSuccess, setIsSuccess] = useState(false)
 
   const { execute, isPending } = useStateAction(forgotPasswordAction, {
-    onError: () => {
+    onError: ({ error }) => {
       toast.error('Falha ao enviar e-mail', {
-        description: 'Verifique se o e-mail informado está correto.',
+        description:
+          error?.serverError ?? 'Verifique se o e-mail informado está correto.',
       })
     },
     onSuccess: () => {

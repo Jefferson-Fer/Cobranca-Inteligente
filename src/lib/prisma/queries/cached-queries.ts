@@ -1,5 +1,7 @@
 'use server'
 
+import { unstable_cacheTag as cacheTag } from 'next/cache'
+
 import { FindChargesList } from '@/contracts/charges'
 import { FindClientsList } from '@/contracts/clients'
 import { createServerClient } from '@/lib/supabase/server'
@@ -43,24 +45,16 @@ export const getClientsByProfile = async (
   params: FindClientsList,
   profileId: string,
 ) => {
+  'use cache'
+  cacheTag('clients' + profileId)
   const clients = await Queries.getClientsByProfileQuery(params, profileId)
 
   return clients
 }
 
-export const getClientsByProfileDefaulters = async (
-  params: FindClientsList,
-  profileId: string,
-) => {
-  const clients = await Queries.getClientsByProfileDefaultersQuery(
-    params,
-    profileId,
-  )
-
-  return clients
-}
-
 export const getSearchClients = async (search?: string) => {
+  'use cache'
+  cacheTag('clients')
   const clients = await Queries.getSearchClientsQuery(search)
 
   return clients
@@ -70,6 +64,8 @@ export const getChargesByProfile = async (
   params: FindChargesList,
   profileId: string,
 ) => {
+  'use cache'
+  cacheTag('charges' + profileId)
   const charges = await Queries.getChargesByProfileQueryList(params, profileId)
 
   return {

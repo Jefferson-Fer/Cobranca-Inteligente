@@ -1,4 +1,4 @@
-/*'use client'
+'use client'
 
 import { useState } from 'react'
 
@@ -44,9 +44,11 @@ export const NewPasswordForm = () => {
           })
         }
       },
-      onError: () => {
+      onError: ({ error }) => {
         toast.error('Erro ao atualizar senha', {
-          description: 'Verifique se a senha informada está correta.',
+          description:
+            error?.serverError ??
+            'Verifique se a senha informada está correta.',
         })
       },
     },
@@ -123,4 +125,4 @@ export const NewPasswordForm = () => {
       </Form>
     </>
   )
-}*/
+}

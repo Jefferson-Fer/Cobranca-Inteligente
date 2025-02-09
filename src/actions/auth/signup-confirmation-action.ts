@@ -2,6 +2,7 @@
 
 import { signUpConfirmationQuery } from '@/lib/prisma/mutations/auth'
 import { actionClientWithMeta } from '@/lib/safe-action'
+import { getURL } from '@/lib/utils'
 import { signUpConfirmationSchema } from '@/validators/signup-validator'
 
 export const signUpConfirmationAction = actionClientWithMeta
@@ -10,7 +11,8 @@ export const signUpConfirmationAction = actionClientWithMeta
     name: 'Sign Up Confirmation',
   })
   .stateAction(async ({ parsedInput: params }) => {
-    const result = await signUpConfirmationQuery(params)
+    console.log('params', params)
+    await signUpConfirmationQuery(params)
 
-    return result
+    return { redirectTo: `${getURL()}sign-in` }
   })

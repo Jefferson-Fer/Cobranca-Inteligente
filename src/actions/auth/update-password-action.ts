@@ -12,7 +12,5 @@ export const updatePasswordAction = authActionClient
   .stateAction(async ({ parsedInput: params }) => {
     const result = await recoverPasswordQuery(params)
 
-    if (result) {
-      return { redirectTo: result.redirectTo }
-    }
+    return { redirectTo: result.redirectTo }
   })

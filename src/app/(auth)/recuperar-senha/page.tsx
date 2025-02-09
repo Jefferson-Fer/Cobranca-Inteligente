@@ -15,8 +15,8 @@ export const metadata: Metadata = {
 
 export default function ForgotPasswordStore() {
   return (
-    <div className="flex items-center justify-center py-12 w-full lg:w-[800px]">
-      <div className="mx-auto grid gap-6 w-full lg:w-[450px]">
+    <div className="flex items-center justify-center w-full lg:w-[800px] px-8">
+      <div className="mx-auto grid gap-6">
         <ForgotPasswordForm />
       </div>
     </div>

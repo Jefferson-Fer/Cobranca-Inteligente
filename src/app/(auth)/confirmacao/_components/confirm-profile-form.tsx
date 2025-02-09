@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useStateAction } from 'next-safe-action/stateful-hooks'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -34,50 +34,55 @@ import {
 
 import { HeaderForm } from '../../_components/header-form'
 
-interface ConfirmProfileFormProps {
-  email: string
-}
-export const ConfirmProfileForm = ({ email }: ConfirmProfileFormProps) => {
+export const ConfirmProfileForm = () => {
   const [isConfirmed, setIsConfirmed] = useState(false)
-  const router = useRouter()
 
-  console.log('email confirmacao', email)
+  const searchParams = useSearchParams()
+  const email = searchParams.get('email')
 
   const { execute, isPending } = useStateAction(signUpConfirmationAction, {
-    onError: () => {
-      toast.error('Falha ao confirmar cadastro', {
-        description: 'Verifique se os dados informados estão corretos',
+    onSuccess: () => {
+      toast.success('Confirmação realizada com sucesso.', {
+        description: 'Agora você já pode fazer o login.',
       })
+      setIsConfirmed(true)
     },
-    onSuccess: ({ data }) => {
-      if (data && data.redirectTo) {
-        toast.success('Confirmação realizada com sucesso.', {
-          description: 'Agora você já pode fazer o login.',
-          action: {
-            label: 'Fazer login',
-            onClick: () => router.push(data.redirectTo),
-            type: 'button',
-          },
-        })
-        setIsConfirmed(true)
-      }
+
+    onError: ({ error }) => {
+      toast.error('Falha ao confirmar cadastro', {
+        description:
+          error?.serverError ??
+          'Verifique se os dados informados estão corretos',
+      })
     },
   })
 
   const form = useForm<SignUpConfirmationSchemaType>({
     resolver: zodResolver(signUpConfirmationSchema),
     defaultValues: {
-      email,
+      email: email ?? '',
     },
   })
 
   const {
     handleSubmit,
     control,
-    formState: { isSubmitting, errors },
+    setValue,
+    formState: { isSubmitting },
   } = form
 
-  console.log('errors', errors)
+  if (!email) {
+    return (
+      <AlertCard
+        variant="destructive"
+        title="E-mail não informado!"
+        description="Não foi encontrado um email na URL."
+        icon="errorTriangle"
+      />
+    )
+  } else {
+    setValue('email', email)
+  }
 
   if (isConfirmed) {
     return (
@@ -90,7 +95,7 @@ export const ConfirmProfileForm = ({ email }: ConfirmProfileFormProps) => {
         <ButtonLink
           variant="default"
           size="sm"
-          href="/entrar"
+          href="/sign-in"
           className="mt-2"
           prefetch={false}
         >

@@ -1,10 +1,10 @@
 'use server'
 
 import { revalidatePath, revalidateTag } from 'next/cache'
-import { getURL } from 'next/dist/shared/lib/utils'
 import { cookies as cookiesHeaders } from 'next/headers'
 
 import { createServerClient } from '@/lib/supabase/server'
+import { getURL } from '@/lib/utils'
 import * as validators from '@/validators'
 
 import { prisma } from '..'
@@ -12,10 +12,9 @@ import { prisma } from '..'
 export const forgotPasswordQuery = async ({
   email,
 }: validators.FogotPasswordSchemaType) => {
-  console.log('email', email)
   const supabase = await createServerClient()
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${getURL()}/nova-senha`,
+    redirectTo: `${getURL()}nova-senha`,
   })
 
   if (error) {
@@ -28,12 +27,14 @@ export const recoverPasswordQuery = async ({
 }: validators.RecoverPasswordSchemaType) => {
   const cookies = await cookiesHeaders()
 
+  console.log('password', password)
+
   const supabase = await createServerClient({ admin: true })
   const redirectTo = '/sign-in'
   const userId = cookies.get('tmp_user_id')?.value
 
   if (!userId) {
-    throw new Error('Erro ao atualizar a senha')
+    throw new Error('Usuário não encontrado')
   }
 
   const { error } = await supabase.auth.admin.updateUserById(userId, {
@@ -41,7 +42,7 @@ export const recoverPasswordQuery = async ({
   })
 
   if (error) {
-    throw new Error('Erro ao atualizar a senha')
+    throw new Error('Erro ao alterar senha, por favor tente novamente.')
   }
 
   cookies.delete('tmp_user_id')
@@ -56,7 +57,6 @@ export const signUpConfirmationQuery = async ({
   const supabase = await createServerClient()
 
   const {
-    error,
     data: { user },
   } = await supabase.auth.verifyOtp({
     email,
@@ -64,7 +64,7 @@ export const signUpConfirmationQuery = async ({
     type: 'email',
   })
 
-  if (error || !user) {
+  if (!user) {
     throw new Error('Erro ao confirmar e-mail')
   }
 
@@ -90,7 +90,5 @@ export const signUpConfirmationQuery = async ({
   revalidatePath('/conta')
   revalidatePath('/odin')
 
-  revalidateTag('profiles')
-
-  return { redirectTo: `${getURL()}/sign-in` }
+  revalidateTag('profiles_list')
 }
