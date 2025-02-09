@@ -1,6 +1,5 @@
-import { type Table } from '@tanstack/react-table'
+import type { Table } from '@tanstack/react-table'
 
-import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -10,14 +9,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+import { Icons } from '../icons'
+
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
-  pageSizeOptions?: number[]
 }
 
 export function DataTablePagination<TData>({
   table,
-  pageSizeOptions = [10, 20, 30, 40, 50],
 }: DataTablePaginationProps<TData>) {
   return (
     <div className="flex w-full flex-col items-center justify-between gap-4 overflow-auto px-2 py-1 sm:flex-row sm:gap-8">
@@ -40,7 +39,7 @@ export function DataTablePagination<TData>({
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {pageSizeOptions.map((pageSize) => (
+              {[10, 20, 30, 40, 50].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
                   {pageSize}
                 </SelectItem>
@@ -54,44 +53,40 @@ export function DataTablePagination<TData>({
         </div>
         <div className="flex items-center space-x-2">
           <Button
-            aria-label="Go to first page"
             variant="outline"
-            size="icon"
-            className="hidden size-8 lg:flex"
+            className="hidden size-8 p-0 lg:flex"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
-            <Icons.chevronLeft className="size-4" aria-hidden="true" />
+            <span className="sr-only">Ir para a primeira página</span>
+            <Icons.chevronsLeft className="size-4" />
           </Button>
           <Button
-            aria-label="Go to previous page"
             variant="outline"
-            size="icon"
-            className="size-8"
+            className="size-8 p-0"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            <Icons.chevronsLeft className="size-4" aria-hidden="true" />
+            <span className="sr-only">Ir para a página anterior</span>
+            <Icons.chevronLeft className="size-4" />
           </Button>
           <Button
-            aria-label="Go to next page"
             variant="outline"
-            size="icon"
-            className="size-8"
+            className="size-8 p-0"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            <Icons.chevronsRight className="size-4" aria-hidden="true" />
+            <span className="sr-only">Ir para a próxima página</span>
+            <Icons.chevronRight className="size-4" />
           </Button>
           <Button
-            aria-label="Go to last page"
             variant="outline"
-            size="icon"
-            className="hidden size-8 lg:flex"
+            className="hidden size-8 p-0 lg:flex"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
-            <Icons.chevronRight className="size-4" aria-hidden="true" />
+            <span className="sr-only">Ir para a última página</span>
+            <Icons.chevronsRight className="size-4" />
           </Button>
         </div>
       </div>

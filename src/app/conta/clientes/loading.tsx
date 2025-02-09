@@ -1,4 +1,4 @@
-import { DataTableLoading } from '@/components/data-table/DataTableLoading'
+import { DataTableLoading } from '@/components/data-table/data-table-loading'
 import { Icons } from '@/components/icons'
 import { PageHeader } from '@/components/page-header'
 import { Button } from '@/components/ui/button'

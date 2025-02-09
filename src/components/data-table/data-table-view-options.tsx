@@ -1,9 +1,7 @@
 'use client'
 
-import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
-import { type Table } from '@tanstack/react-table'
+import type { Table } from '@tanstack/react-table'
 
-import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -11,8 +9,10 @@ import {
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { toSentenceCase } from '@/lib/utils'
+
+import { Icons } from '../icons'
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>
@@ -25,17 +25,16 @@ export function DataTableViewOptions<TData>({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          aria-label="Toggle columns"
           variant="outline"
           size="sm"
           className="ml-auto hidden h-8 lg:flex"
         >
-          <Icons.columns className="mr-2 size-4" />
-          Exibição
+          <Icons.settingsHorizontal className="mr-2 size-4" />
+          Visualizar
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Editar colunas</DropdownMenuLabel>
+        <DropdownMenuLabel>Alternar colunas</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()
@@ -51,7 +50,7 @@ export function DataTableViewOptions<TData>({
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {toSentenceCase(column.id)}
+                {column.id}
               </DropdownMenuCheckboxItem>
             )
           })}

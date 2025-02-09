@@ -7,7 +7,6 @@ import Footer from '@/app/_components/lobby/footer'
 import Functions from '@/app/_components/lobby/functions'
 import HeaderLobby from '@/app/_components/lobby/header'
 import Hero from '@/app/_components/lobby/hero'
-import Plans from '@/app/_components/lobby/plans'
 
 export default function Home() {
   const { scrollYProgress } = useScroll()
@@ -30,9 +29,6 @@ export default function Home() {
         </section>
         <section id="features">
           <Functions />
-        </section>
-        <section id="plans">
-          <Plans />
         </section>
         <section id="faq">
           <FAQ />

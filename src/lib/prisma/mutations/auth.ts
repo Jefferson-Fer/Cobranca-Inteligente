@@ -12,6 +12,7 @@ import { prisma } from '..'
 export const forgotPasswordQuery = async ({
   email,
 }: validators.FogotPasswordSchemaType) => {
+  console.log('email', email)
   const supabase = await createServerClient()
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${getURL()}/nova-senha`,
@@ -28,17 +29,14 @@ export const recoverPasswordQuery = async ({
   const cookies = await cookiesHeaders()
 
   const supabase = await createServerClient({ admin: true })
-  let redirectTo = '/entrar'
+  const redirectTo = '/sign-in'
   const userId = cookies.get('tmp_user_id')?.value
 
   if (!userId) {
     throw new Error('Erro ao atualizar a senha')
   }
 
-  const {
-    error,
-    data: { user },
-  } = await supabase.auth.admin.updateUserById(userId, {
+  const { error } = await supabase.auth.admin.updateUserById(userId, {
     password,
   })
 
@@ -47,23 +45,6 @@ export const recoverPasswordQuery = async ({
   }
 
   cookies.delete('tmp_user_id')
-
-  if (user) {
-    const { user_metadata } = user
-    const { role } = user_metadata
-
-    if (['MANAGER', 'SELLER'].includes(role)) {
-      redirectTo = '/loja/entrar'
-    }
-
-    if (role === 'ADMIN') {
-      redirectTo = '/kratos/entrar'
-    }
-
-    if (role === 'USER') {
-      redirectTo = '/entrar'
-    }
-  }
 
   return { redirectTo }
 }

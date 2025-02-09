@@ -25,7 +25,7 @@ export function SignupForm() {
         })
         formMethods.reset()
 
-        router.push('/sign-in')
+        router.push(data.redirectTo)
       }
     },
     onError: ({ error }) => {

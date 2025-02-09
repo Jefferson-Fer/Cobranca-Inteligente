@@ -1,7 +1,7 @@
-import {} from 'react'
-import { type Column } from '@tanstack/react-table'
+import type * as React from 'react'
 
-import { Icons } from '@/components/icons'
+import type { Column } from '@tanstack/react-table'
+
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -19,33 +19,35 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
-import { type Option } from '@/contracts/commons'
 import { cn } from '@/lib/utils'
 
-interface DataTableFacetedFilter<TData, TValue> {
+import { Icons } from '../icons'
+
+interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
   title?: string
-  options: Option[]
+  options: {
+    label: string
+    value: string
+    icon?: React.ComponentType<{ className?: string }>
+  }[]
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
   options,
-}: DataTableFacetedFilter<TData, TValue>) {
+}: DataTableFacetedFilterProps<TData, TValue>) {
+  const facets = column?.getFacetedUniqueValues()
   const selectedValues = new Set(column?.getFilterValue() as string[])
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          aria-label="Filter rows"
-          variant="outline"
-          size="sm"
-          className="h-8 border-dashed"
-        >
-          <Icons.addCircle className="mr-2 size-4" aria-hidden="true" />
+        <Button variant="outline" size="sm" className="h-8 border-dashed">
+          <Icons.addCircleIcon className="mr-2 size-4" />
           {title}
+
           {selectedValues?.size > 0 && (
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
@@ -56,12 +58,12 @@ export function DataTableFacetedFilter<TData, TValue>({
                 {selectedValues.size}
               </Badge>
               <div className="hidden space-x-1 lg:flex">
-                {selectedValues.size > 1 ? (
+                {selectedValues.size > 2 ? (
                   <Badge
                     variant="secondary"
-                    className="rounded-sm text-xs px-1 font-normal"
+                    className="rounded-sm px-1 font-normal"
                   >
-                    {selectedValues.size} items
+                    {selectedValues.size} selecionados
                   </Badge>
                 ) : (
                   options
@@ -112,18 +114,18 @@ export function DataTableFacetedFilter<TData, TValue>({
                           : 'opacity-50 [&_svg]:invisible',
                       )}
                     >
-                      <Icons.check
-                        className={cn('size-4')}
-                        aria-hidden="true"
-                      />
+                      <Icons.checkIcon className={cn('size-4')} />
                     </div>
                     {option.icon && (
-                      <option.icon
-                        className="mr-2 size-4 text-muted-foreground"
-                        aria-hidden="true"
-                      />
+                      <option.icon className="mr-2 size-4 text-muted-foreground" />
                     )}
+
                     <span>{option.label}</span>
+                    {facets?.get(option.value) && (
+                      <span className="ml-auto flex size-4 items-center justify-center font-mono text-xs">
+                        {facets.get(option.value)}
+                      </span>
+                    )}
                   </CommandItem>
                 )
               })}

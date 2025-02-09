@@ -4,14 +4,14 @@ import { MouseEventHandler, useMemo, useTransition } from 'react'
 
 import type { Table } from '@tanstack/react-table'
 
-import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import type { DataTableFilterField } from '@/contracts/commons'
+import { DataTableFilterField } from '@/contracts/commons'
 import { cn } from '@/lib/utils'
 
-import { DataTableFacetedFilter } from './DataTableFacetedFilter'
-import { DataTableViewOptions } from './DataTableViewOptions'
+import { DataTableFacetedFilter } from './data-table-faceted-filter'
+import { DataTableViewOptions } from './data-table-view-options'
+import { Icons } from '../icons'
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
@@ -35,7 +35,7 @@ export function DataTableToolbar<TData>({
   }, [filterFields])
 
   return (
-    <div className="flex w-full items-center justify-between space-x-2 overflow-auto p-1">
+    <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         {searchableColumns.length > 0 &&
           searchableColumns.map(

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 
 import EmptyState from '@/components/empty-state'
 import { PageHeader } from '@/components/page-header'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { ParamsTypes, SearchParamsTypes } from '@/contracts/commons'
 import {
   getClientsByProfile,
@@ -33,10 +34,8 @@ export default async function ClientesPage({
 
   const clients = await getClientsByProfile(parsedParams, profile.id)
 
-  const pageCount = Math.ceil((clients?.count ?? 0) / parsedParams.limit)
-
   return (
-    <>
+    <div className="w-full mx-auto">
       <PageHeader
         {...{ title, description }}
         breadcrumbLinks={['dashboard', 'costumers']}
@@ -45,13 +44,15 @@ export default async function ClientesPage({
         <NewUserModal />
       </PageHeader>
       {clients?.clients && clients.clients.length > 0 ? (
-        <ClientsTableShell data={clients.clients} pageCount={pageCount} />
+        <ScrollArea className="h-[400px] w-full">
+          <ClientsTableShell data={clients.clients} />
+        </ScrollArea>
       ) : (
         <EmptyState
           title="Nenhum cliente encontrado"
           description="Crie um cliente para começar a gerenciar suas vendas"
         />
       )}
-    </>
+    </div>
   )
 }

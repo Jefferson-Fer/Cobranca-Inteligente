@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useStateAction } from 'next-safe-action/stateful-hooks'
@@ -18,12 +18,9 @@ import { forgotPasswordSchema } from '@/validators/signup-validator'
 import { FogotPasswordSchemaType } from '@/validators/signup-validator'
 
 export const ForgotPasswordForm = () => {
-  const [isPending, setTransaction] = useTransition()
   const [isSuccess, setIsSuccess] = useState(false)
-  const formMethods = useForm<FogotPasswordSchemaType>({
-    resolver: zodResolver(forgotPasswordSchema),
-  })
-  const forgotPassword = useStateAction(forgotPasswordAction, {
+
+  const { execute, isPending } = useStateAction(forgotPasswordAction, {
     onError: () => {
       toast.error('Falha ao enviar e-mail', {
         description: 'Verifique se o e-mail informado está correto.',
@@ -34,18 +31,13 @@ export const ForgotPasswordForm = () => {
     },
   })
 
+  const formMethods = useForm<FogotPasswordSchemaType>({
+    resolver: zodResolver(forgotPasswordSchema),
+  })
+
   const {
-    handleSubmit,
     formState: { isSubmitting, isValid },
   } = formMethods
-
-  function onSubmit(credentials: FogotPasswordSchemaType) {
-    setTransaction(async () => {
-      forgotPassword.execute({
-        email: credentials.email,
-      })
-    })
-  }
 
   if (isSuccess) {
     return (
@@ -65,7 +57,10 @@ export const ForgotPasswordForm = () => {
         description="Preencha o formulário para receber o link de recuperação."
       />
       <Form {...formMethods}>
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
+        <form
+          onSubmit={formMethods.handleSubmit(execute)}
+          className="grid gap-4"
+        >
           <InputForm
             name="email"
             label="E-mail"

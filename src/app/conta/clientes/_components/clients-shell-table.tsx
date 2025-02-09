@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { TypeClient } from '@prisma/client'
-import { type ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { useStateAction } from 'next-safe-action/stateful-hooks'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -13,39 +13,38 @@ import { deleteClientAction } from '@/actions/client/delete-client-action'
 import { deleteClientBatchAction } from '@/actions/client/delete-client-batch-action'
 import { updateClientAction } from '@/actions/client/update-client-action'
 import { DataTable } from '@/components/data-table'
-import { DataTableColumnHeader } from '@/components/data-table/DataTableColumnHeader'
+import { DataTableColumnHeader } from '@/components/data-table/data-table-column-herader'
 import { Icons } from '@/components/icons'
 import { InputForm } from '@/components/input-form'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { DialogDescription } from '@/components/ui/dialog'
 import {
-  Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Dialog } from '@/components/ui/dialog'
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Form } from '@/components/ui/form'
 import { LoadingOnButton } from '@/components/ui/loading'
 import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
-import { getBadgeVariantByTypeClient, userStatusText } from '@/config/constant'
+import { userStatusText } from '@/config/constant'
+import { getBadgeVariantByTypeClient } from '@/config/constant'
 import { ClientWithCounts } from '@/contracts/clients'
-import { formatDate } from '@/lib/utils'
-import { UpdateClientSchemaType } from '@/validators/client-validator'
 import { updateClientSchema } from '@/validators/client-validator'
+import { UpdateClientSchemaType } from '@/validators/client-validator'
 
 interface ClientsTableShellProps {
   data: ClientWithCounts[]
-  pageCount: number
 }
 
 interface SelectedRowType {
@@ -53,7 +52,12 @@ interface SelectedRowType {
   enabled: boolean
 }
 
-export function ClientsTableShell({ data, pageCount }: ClientsTableShellProps) {
+export interface FilterOptions {
+  name: string
+  status: string | null
+}
+
+export function ClientsTableShell({ data }: ClientsTableShellProps) {
   const [selectedRowIds, setSelectedRowIds] = useState<SelectedRowType[]>([])
   const [selectedClient, setSelectedClient] = useState<ClientWithCounts | null>(
     null,
@@ -114,14 +118,17 @@ export function ClientsTableShell({ data, pageCount }: ClientsTableShellProps) {
 
   const { handleSubmit, setValue, reset } = formMethods
 
-  const onUpdate = (client: ClientWithCounts) => {
-    setValue('email', client.email ?? '')
-    setValue('phone', client.phone ?? '')
-    setValue('name', client.name ?? '')
-    setValue('id', client.id ?? '')
+  const onUpdate = useCallback(
+    (client: ClientWithCounts) => {
+      setValue('email', client.email ?? '')
+      setValue('phone', client.phone ?? '')
+      setValue('name', client.name ?? '')
+      setValue('id', client.id ?? '')
 
-    setIsUpdateDialogOpen(true)
-  }
+      setIsUpdateDialogOpen(true)
+    },
+    [setValue],
+  )
 
   const handleDeleteClient = useCallback(() => {
     if (selectedClient) {
@@ -133,7 +140,6 @@ export function ClientsTableShell({ data, pageCount }: ClientsTableShellProps) {
     () => [
       {
         id: 'select',
-
         header: ({ table }) => (
           <Checkbox
             checked={table.getIsAllPageRowsSelected()}
@@ -190,20 +196,21 @@ export function ClientsTableShell({ data, pageCount }: ClientsTableShellProps) {
         },
       },
       {
-        accessorKey: 'email',
+        accessorKey: 'phone',
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Email" />
+          <DataTableColumnHeader column={column} title="Telefone" />
         ),
         cell: ({ row }) => {
-          const email = row.original.email
+          const phone = row.original.phone
 
-          return <Text>{email ?? '---'}</Text>
+          return <Text>{phone}</Text>
         },
       },
+
       {
         accessorKey: 'type',
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Status do Cliente" />
+          <DataTableColumnHeader column={column} title="Status" />
         ),
         cell: ({ cell }) => {
           const type = cell.getValue() as TypeClient
@@ -217,15 +224,10 @@ export function ClientsTableShell({ data, pageCount }: ClientsTableShellProps) {
       },
 
       {
-        accessorKey: 'createdAt',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Criado em" />
-        ),
-        cell: ({ cell }) => formatDate(cell.getValue() as Date, true),
-        enableColumnFilter: false,
-      },
-      {
         id: 'actions',
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Ações" />
+        ),
         cell: ({ row }) => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -240,10 +242,10 @@ export function ClientsTableShell({ data, pageCount }: ClientsTableShellProps) {
                 />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
+            <DropdownMenuContent align="end" className="w-32">
               <DropdownMenuItem asChild>
                 <Button
-                  className="w-full"
+                  className="w-full justify-start"
                   variant={'link'}
                   onClick={() => onUpdate(row.original)}
                 >
@@ -260,7 +262,7 @@ export function ClientsTableShell({ data, pageCount }: ClientsTableShellProps) {
                     setSelectedClient(row.original)
                     row.toggleSelected(false)
                   }}
-                  className="p-0 w-full"
+                  className="w-full justify-start"
                 >
                   <Icons.trash className="mr-2 size-4" aria-hidden="true" />{' '}
                   Deletar
@@ -281,7 +283,6 @@ export function ClientsTableShell({ data, pageCount }: ClientsTableShellProps) {
       <DataTable
         columns={columns}
         data={data}
-        pageCount={pageCount}
         filterFields={[
           {
             value: 'name',
@@ -291,6 +292,7 @@ export function ClientsTableShell({ data, pageCount }: ClientsTableShellProps) {
         ]}
         deleteRowsAction={() => setConfirmBatchDelete(true)}
       />
+
       <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
         <DialogContent>
           <DialogHeader>

@@ -26,6 +26,5 @@ export const ContaNavigation = [
 export const lobbyNavigation = [
   { id: 'home', label: 'Home', href: '/' },
   { id: 'features', label: 'Funcionalidades', href: '#features' },
-  { id: 'plans', label: 'Planos', href: '#plans' },
   { id: 'faq', label: 'FAQ', href: '#faq' },
 ]
