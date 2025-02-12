@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useStateAction } from 'next-safe-action/stateful-hooks'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { useDebounce } from 'use-debounce'
 
 import { createChargeAction } from '@/actions/charge/create-charge-action'
 import { Icons } from '@/components/icons'
@@ -66,9 +65,9 @@ export default function NewChargeModal() {
   } = formMethods
 
   const [searchClient, setSearchClient] = useState('')
-  const [debouncedSearchClient] = useDebounce(searchClient, 400)
+  //const [debouncedSearchClient] = useDebounce(searchClient, 400)
 
-  const { data: clients } = useGetClientsOptions(debouncedSearchClient)
+  const { data: clients } = useGetClientsOptions(searchClient)
 
   const handleCreateCharge = (data: ChargeSchemaType) => {
     console.log(data)
