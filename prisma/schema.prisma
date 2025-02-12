@@ -58,7 +58,6 @@ model Charge {
   total_value      Float
   description      String
   status           StatusCharge @default(PENDING)
-  type             TypeCharge   @default(MONTHLY)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -95,18 +94,10 @@ enum TypeClient {
 
 enum StatusCharge {
   PENDING
-  PENDING_PARTIAL
   PAID
   OVERDUE
 
   @@map("status_charges")
-}
-
-enum TypeCharge {
-  MONTHLY
-  YEARLY
-
-  @@map("type_charges")
 }
 
 view AuthUser {

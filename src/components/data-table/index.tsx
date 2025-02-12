@@ -26,13 +26,16 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTableFilterField } from '@/contracts/commons'
+import { cn } from '@/lib/utils'
 
 import { DataTablePagination } from './data-table-pagination'
 import { DataTableToolbar } from './data-table-toolbar'
-
+import { ScrollArea, ScrollBar } from '../ui/scroll-area'
+import { useSidebar } from '../ui/sidebar'
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  pageCount: number
   filterFields?: DataTableFilterField<TData>[]
   deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>
 }
@@ -40,6 +43,7 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  pageCount,
   filterFields = [],
   deleteRowsAction,
 }: DataTableProps<TData, TValue>) {
@@ -54,6 +58,7 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    pageCount,
     state: {
       sorting,
       columnVisibility,
@@ -73,62 +78,77 @@ export function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
+  const { isMobile, state } = useSidebar()
+
   return (
-    <div className="space-y-4">
+    <div
+      className={cn(
+        'w-[91vmin] sm:w-[95vmax] md:w-[calc(95vw-var(--sidebar-width))] xl:w-full space-y-3 overflow-auto transition-all duration-300',
+        !isMobile &&
+          state === 'collapsed' &&
+          'md:w-[calc(95vw-var(--sidebar-width-icon))] lg:w-full',
+        !isMobile &&
+          state === 'expanded' &&
+          'lg:w-[calc(97vw-var(--sidebar-width))]',
+      )}
+    >
       <DataTableToolbar
         table={table}
         deleteRowsAction={deleteRowsAction}
         filterFields={filterFields}
       />
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+      <div className="rounded-md border bg-background overflow-hidden">
+        <ScrollArea className="w-full">
+          <Table className="w-max lg:w-full">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    )
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Nenhum resultado.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          <ScrollBar orientation="horizontal" className="h-2.5 peer" />
+        </ScrollArea>
       </div>
       <DataTablePagination table={table} />
     </div>

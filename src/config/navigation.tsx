@@ -11,16 +11,10 @@ export const ContaNavigation = [
   { key: 'dashboard', label: 'Dashboard', href: '/conta' },
   { key: 'costumers', label: 'Clientes', href: '/conta/clientes' },
   {
-    key: 'charges-monthly',
-    label: 'Mensalidades',
-    href: '/conta/cobrancas/mensalidades',
+    key: 'charges',
+    label: 'Cobranças',
+    href: '/conta/cobrancas',
   },
-  {
-    key: 'charges-installments',
-    label: 'Parcelamentos',
-    href: '/conta/cobrancas/parcelas',
-  },
-  { key: 'reports', label: 'Relatórios', href: '/conta/relatorios' },
 ]
 
 export const lobbyNavigation = [

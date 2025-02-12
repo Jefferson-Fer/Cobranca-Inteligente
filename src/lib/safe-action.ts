@@ -14,8 +14,6 @@ import { logger } from '@/lib/utils'
 
 import { getProfile, getUser } from './prisma/queries/cached-queries'
 
-//import { setupAnalytics } from '@/lib/openpanel/server'
-
 const ratelimit = new Ratelimit({
   limiter: Ratelimit.fixedWindow(10, '10s'),
   redis: RedisClient,
@@ -91,21 +89,6 @@ export const authActionClient = actionClientWithMeta
     if (!user) {
       throw new Error('Não autorizado')
     }
-
-    /*const metadataUser = user.raw_user_meta_data as {
-      fullName?: string
-      name?: string
-      role: TypeProfile
-    }*/
-
-    //const analytics = await setupAnalytics({
-    //  userId: user.id,
-    //  fullName: metadataUser.fullName ?? metadataUser.name ?? '-',
-    //})
-
-    //if (metadata?.track) {
-    //  analytics.track(metadata.track)
-    //}
 
     const hasProfile = await getProfile()
 

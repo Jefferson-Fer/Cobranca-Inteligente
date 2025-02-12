@@ -33,8 +33,9 @@ export default async function ContaLayout({ children }: ContaLayoutProps) {
           <AppSidebar type="user" profile={profile} />
           <aside className="flex flex-col w-full">
             <HeaderAccount />
+
             <ScrollArea className="w-full">
-              <div className="flex flex-col gap-4 lg:gap-6 p-4 h-full max-w-screen-xl xl:mx-auto">
+              <div className="h-full flex flex-col gap-4 lg:gap-2 p-4 max-w-screen-xl xl:mx-auto">
                 {children}
               </div>
             </ScrollArea>

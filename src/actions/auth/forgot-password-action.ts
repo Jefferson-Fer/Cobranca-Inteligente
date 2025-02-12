@@ -11,5 +11,7 @@ export const forgotPasswordAction = actionClientWithMeta
   })
 
   .stateAction(async ({ parsedInput: params }) => {
-    await forgotPasswordQuery(params)
+    const result = await forgotPasswordQuery(params)
+
+    return result
   })

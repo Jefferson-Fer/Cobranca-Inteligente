@@ -11,18 +11,19 @@ import { createClientAction } from '@/actions/client/create-client-action'
 import { Icons } from '@/components/icons'
 import { InputForm } from '@/components/input-form'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { LoadingOnButton } from '@/components/ui/loading'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
+import { Text } from '@/components/ui/text'
 import { clientSchema, ClientSchemaType } from '@/validators/client-validator'
 
 export default function NewUserModal() {
@@ -52,20 +53,23 @@ export default function NewUserModal() {
   } = formMethods
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Icons.new />
-        </Button>
-      </DialogTrigger>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <div className="w-full flex justify-end">
+        <SheetTrigger asChild>
+          <Button className="w-[200px]">
+            <Icons.new className="size-4" />
+            <Text variant="white">Adicionar</Text>
+          </Button>
+        </SheetTrigger>
+      </div>
 
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Adicionar cliente</DialogTitle>
-        </DialogHeader>
-        <DialogDescription className="sr-only">
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Adicionar cliente</SheetTitle>
+        </SheetHeader>
+        <SheetDescription className="sr-only">
           Adicione um novo cliente para gerenciar suas contas e transações.
-        </DialogDescription>
+        </SheetDescription>
         <Form {...formMethods}>
           <form onSubmit={handleSubmit(execute)} className="grid gap-4">
             <InputForm
@@ -90,12 +94,16 @@ export default function NewUserModal() {
             />
           </form>
         </Form>
-        <DialogFooter className="w-full flex justify-between gap-2">
-          <DialogClose asChild>
-            <Button type="button" variant="outline" className="mr-auto">
+        <SheetFooter className="w-full flex justify-between gap-2 mt-4">
+          <SheetClose asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full sm:w-auto mr-auto"
+            >
               Cancelar
             </Button>
-          </DialogClose>
+          </SheetClose>
 
           <Button
             type="submit"
@@ -108,8 +116,8 @@ export default function NewUserModal() {
               onActionText="Cadastrando..."
             />
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   )
 }

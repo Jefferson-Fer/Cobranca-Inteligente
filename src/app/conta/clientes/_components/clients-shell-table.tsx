@@ -13,20 +13,13 @@ import { deleteClientAction } from '@/actions/client/delete-client-action'
 import { deleteClientBatchAction } from '@/actions/client/delete-client-batch-action'
 import { updateClientAction } from '@/actions/client/update-client-action'
 import { DataTable } from '@/components/data-table'
-import { DataTableColumnHeader } from '@/components/data-table/data-table-column-herader'
+import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
 import { Icons } from '@/components/icons'
 import { InputForm } from '@/components/input-form'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { DialogDescription } from '@/components/ui/dialog'
-import {
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Dialog } from '@/components/ui/dialog'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import {
   DropdownMenu,
@@ -36,8 +29,15 @@ import {
 import { Form } from '@/components/ui/form'
 import { LoadingOnButton } from '@/components/ui/loading'
 import { Separator } from '@/components/ui/separator'
+import {
+  Sheet,
+  SheetDescription,
+  SheetTitle,
+  SheetHeader,
+  SheetContent,
+} from '@/components/ui/sheet'
 import { Text } from '@/components/ui/text'
-import { userStatusText } from '@/config/constant'
+import { statusClientOptions, userStatusText } from '@/config/constant'
 import { getBadgeVariantByTypeClient } from '@/config/constant'
 import { ClientWithCounts } from '@/contracts/clients'
 import { updateClientSchema } from '@/validators/client-validator'
@@ -45,6 +45,7 @@ import { UpdateClientSchemaType } from '@/validators/client-validator'
 
 interface ClientsTableShellProps {
   data: ClientWithCounts[]
+  pageCount: number
 }
 
 interface SelectedRowType {
@@ -57,7 +58,7 @@ export interface FilterOptions {
   status: string | null
 }
 
-export function ClientsTableShell({ data }: ClientsTableShellProps) {
+export function ClientsTableShell({ data, pageCount }: ClientsTableShellProps) {
   const [selectedRowIds, setSelectedRowIds] = useState<SelectedRowType[]>([])
   const [selectedClient, setSelectedClient] = useState<ClientWithCounts | null>(
     null,
@@ -222,7 +223,6 @@ export function ClientsTableShell({ data }: ClientsTableShellProps) {
           )
         },
       },
-
       {
         id: 'actions',
         header: ({ column }) => (
@@ -283,24 +283,31 @@ export function ClientsTableShell({ data }: ClientsTableShellProps) {
       <DataTable
         columns={columns}
         data={data}
+        pageCount={pageCount}
         filterFields={[
           {
             value: 'name',
             label: 'Nome',
             placeholder: 'Buscar por nomes..',
           },
+          {
+            value: 'type',
+            label: 'Status',
+            placeholder: 'Buscar por status..',
+            options: statusClientOptions,
+          },
         ]}
         deleteRowsAction={() => setConfirmBatchDelete(true)}
       />
 
-      <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Editar cliente</DialogTitle>
-          </DialogHeader>
-          <DialogDescription className="sr-only">
+      <Sheet open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Editar cliente</SheetTitle>
+          </SheetHeader>
+          <SheetDescription className="sr-only">
             Edite as informações do cliente.
-          </DialogDescription>
+          </SheetDescription>
           <Form {...formMethods}>
             <form onSubmit={handleSubmit(execute)} className="grid gap-4">
               <InputForm
@@ -342,8 +349,8 @@ export function ClientsTableShell({ data }: ClientsTableShellProps) {
               </div>
             </form>
           </Form>
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
 
       {selectedClient && (
         <ConfirmDialog

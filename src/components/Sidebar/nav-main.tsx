@@ -54,7 +54,7 @@ export function NavMain({ links, baseUrl, userType }: NavMainProps) {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+      <SidebarGroupLabel>General</SidebarGroupLabel>
       <SidebarMenu>
         {sidebarLinksWithActived.map((item) => (
           <Collapsible
@@ -65,10 +65,21 @@ export function NavMain({ links, baseUrl, userType }: NavMainProps) {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && IconLink(item.icon)}
-                  <span>{item.title}</span>
-                  <Icons.chevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                <SidebarMenuButton asChild>
+                  {item.items ? (
+                    <>
+                      {item.icon && IconLink(item.icon)}
+                      <span>{item.title}</span>
+                      <Icons.chevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </>
+                  ) : (
+                    <Link key={item.title} href={`${baseUrl}${item.url}`}>
+                      {IconLink(item.icon as keyof typeof Icons)}
+                      <span className="block group-[.isOpen]:hidden">
+                        {item.title}
+                      </span>
+                    </Link>
+                  )}
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>

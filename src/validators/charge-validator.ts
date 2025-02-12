@@ -23,7 +23,6 @@ export const chargeSchema = z.object({
     .number()
     .min(1, { message: DEFAULTS.minValue })
     .optional(),
-  total_value: z.coerce.number().min(1, { message: DEFAULTS.minValue }),
   description: z.string().min(1, { message: DEFAULTS.required }),
   clientId: z.string().cuid({ message: 'ID do cliente inválido' }),
 })

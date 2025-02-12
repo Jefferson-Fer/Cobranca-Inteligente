@@ -8,6 +8,10 @@ export const createChargeQuery = async (
   return await prisma.charge.create({
     data: {
       ...params,
+      total_value:
+        params.amount +
+        (params.additional_value ?? 0) -
+        (params.discount_value ?? 0),
       profileId,
     },
   })

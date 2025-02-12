@@ -202,6 +202,16 @@
 .leaflet-top {
   z-index: 0 !important;
 }
+
+.hide-scrollbar {
+  scrollbar-width: none; /* Para Firefox */
+  -ms-overflow-style: none; /* Para Internet Explorer e Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Para Chrome, Safari e Opera */
+}
+
 @layer base {
   * {
     @apply border-border;

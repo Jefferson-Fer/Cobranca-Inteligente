@@ -12,10 +12,10 @@ export type SidebarLink = {
 export type NewSidebarLink = {
   title: string
   url: string
-  icon: keyof typeof Icons
   isActive?: boolean
+  icon?: keyof typeof Icons
   hideTo?: TypeProfile[]
-  items?: NewSidebarLink[]
+  items?: SidebarLink[]
 }
 
 export const sidebarOdin: NewSidebarLink[] = [
@@ -69,44 +69,18 @@ export const sidebarOdin: NewSidebarLink[] = [
 
 export const sidebarUser: NewSidebarLink[] = [
   {
+    title: 'Dashboard',
+    url: '/',
+    icon: 'home',
+  },
+  {
     title: 'Clientes',
     url: '/clientes',
     icon: 'costumers',
-    items: [
-      {
-        title: 'Listagem',
-        url: '/clientes',
-        icon: 'list',
-      },
-    ],
   },
   {
     title: 'Cobranças',
     url: '/cobrancas',
     icon: 'money',
-    items: [
-      {
-        title: 'Mensalidades',
-        url: '/cobrancas/mensalidades',
-        icon: 'repeat',
-      },
-      {
-        title: 'Parcelamentos',
-        url: '/cobrancas/parcelamentos',
-        icon: 'installments',
-      },
-    ],
-  },
-  {
-    title: 'Relatórios',
-    url: '/relatorios',
-    icon: 'barChart',
-    items: [
-      {
-        title: 'Listagem',
-        url: '/relatorios',
-        icon: 'list',
-      },
-    ],
   },
 ]

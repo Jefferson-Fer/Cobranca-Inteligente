@@ -36,9 +36,9 @@ export const validatePathByRole = (pathname: string, role: TypeProfile) => {
 
 export const getURL = () => {
   let url =
-    env.NEXT_PUBLIC_APP_URL ?? // Set this to your site URL in production env.
-    env.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-    'http://localhost:3000/'
+    env.NODE_ENV === 'production'
+      ? env.NEXT_PUBLIC_VERCEL_URL
+      : env.NEXT_PUBLIC_APP_URL
   // Make sure to include `https://` when not localhost.
   url = url.startsWith('http') ? url : `https://${url}`
   // Make sure to include a trailing `/`.
@@ -91,4 +91,17 @@ export function formatDate(date: Date | string | number, short = false) {
     day: 'numeric',
     year: 'numeric',
   }).format(new Date(date))
+}
+
+export function formatMoney(
+  amount: number,
+  currency: string = 'BRL',
+  locale: string = 'pt-BR',
+) {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount)
 }

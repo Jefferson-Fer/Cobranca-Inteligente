@@ -31,7 +31,7 @@ export const PageHeader = ({
   return (
     <header className={cn('flex flex-col gap-1 mb-4', className)}>
       {breadcrumbLinks && <BreadcrumbDashboard links={links} />}
-      <div className="flex gap-2 justify-between items-center">
+      <div className="flex flex-col sm:flex-row gap-2 justify-start sm:justify-between items-center">
         <div className="flex flex-col gap-1 w-full">
           <Headline
             variant="heading"

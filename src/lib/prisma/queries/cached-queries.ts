@@ -3,7 +3,6 @@
 import { unstable_cacheTag as cacheTag } from 'next/cache'
 
 import { FindChargesList } from '@/contracts/charges'
-import { FindClientsList } from '@/contracts/clients'
 import { createServerClient } from '@/lib/supabase/server'
 
 import * as Queries from './no-cached-queries'
@@ -41,13 +40,10 @@ export const getProfile = async () => {
   return profile
 }
 
-export const getClientsByProfile = async (
-  params: FindClientsList,
-  profileId: string,
-) => {
+export const getClientsByProfile = async (profileId: string) => {
   'use cache'
   cacheTag('clients' + profileId)
-  const clients = await Queries.getClientsByProfileQuery(params, profileId)
+  const clients = await Queries.getClientsByProfileQuery(profileId)
 
   return clients
 }

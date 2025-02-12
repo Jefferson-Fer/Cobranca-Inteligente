@@ -1,7 +1,6 @@
 import type React from 'react' // Added import for React
 
 import type { Column } from '@tanstack/react-table'
-import { ChevronsUpDown, EyeOff, SortAsc, SortDesc } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -12,6 +11,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
+
+import { Icons } from '../icons'
 
 interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -39,26 +40,44 @@ export function DataTableColumnHeader<TData, TValue>({
           >
             <span>{title}</span>
             {column.getIsSorted() === 'desc' ? (
-              <SortDesc className="ml-2 size-4" />
+              <Icons.arrowDown className="ml-2 size-4" aria-hidden="true" />
             ) : column.getIsSorted() === 'asc' ? (
-              <SortAsc className="ml-2 size-4" />
+              <Icons.arrowUp className="ml-2 size-4" aria-hidden="true" />
             ) : (
-              <ChevronsUpDown className="ml-2 size-4" />
+              <Icons.updown className="ml-2 size-4" aria-hidden="true" />
             )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
-            <SortAsc className="mr-2 size-3.5 text-muted-foreground/70" />
+          <DropdownMenuItem
+            aria-label="Sort ascending"
+            onClick={() => column.toggleSorting(false)}
+          >
+            <Icons.arrowUp
+              className="mr-2 size-3.5 text-muted-foreground/70"
+              aria-hidden="true"
+            />
             Asc
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
-            <SortDesc className="mr-2 size-3.5 text-muted-foreground/70" />
+          <DropdownMenuItem
+            aria-label="Sort descending"
+            onClick={() => column.toggleSorting(true)}
+          >
+            <Icons.arrowDown
+              className="mr-2 size-3.5 text-muted-foreground/70"
+              aria-hidden="true"
+            />
             Desc
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
-            <EyeOff className="mr-2 size-3.5 text-muted-foreground/70" />
+          <DropdownMenuItem
+            aria-label="Ocultar coluna"
+            onClick={() => column.toggleVisibility(false)}
+          >
+            <Icons.hide
+              className="mr-2 size-3.5 text-muted-foreground/70"
+              aria-hidden="true"
+            />
             Ocultar
           </DropdownMenuItem>
         </DropdownMenuContent>

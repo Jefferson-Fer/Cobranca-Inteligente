@@ -17,52 +17,17 @@ export const getClientProfileQuery = async (
   return clients
 }
 
-export const getClientsByProfileQuery = async (
-  {
-    limit,
-    offset,
-    column = 'createdAt',
-    fromDay,
-    order = 'desc',
-
-    search,
-    toDay,
-  }: FindClientsList,
-  profileId: string,
-) => {
-  const dayFilter =
-    fromDay && toDay
-      ? {
-          gte: fromDay,
-          lte: toDay,
-        }
-      : undefined
-
-  const orderFilter =
-    column && order
-      ? {
-          [column]: order,
-        }
-      : undefined
-
+export const getClientsByProfileQuery = async (profileId: string) => {
   const clients = await prisma.client.findMany({
     where: {
-      name: search ? { contains: search } : undefined,
       profileId: profileId,
-      createdAt: dayFilter,
     },
-    orderBy: orderFilter,
-    take: limit,
-    skip: offset,
   })
 
   const count = await prisma.client.count({
     where: {
-      name: search ? { contains: search } : undefined,
       profileId: profileId,
-      createdAt: dayFilter,
     },
-    orderBy: orderFilter,
   })
 
   return { clients, count }

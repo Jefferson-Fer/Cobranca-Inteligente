@@ -1,4 +1,17 @@
+import { Metadata } from 'next'
+
+import { env } from '@/lib/env'
+
 import { SignupForm } from './_components/signup-form'
+
+const title = 'Cadastro'
+const description = 'Cadastre-se para continuar.'
+
+export const metadata: Metadata = {
+  metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
+  title,
+  description,
+}
 
 export default function SignupPage() {
   return (

@@ -13,8 +13,10 @@ export const forgotPasswordQuery = async ({
   email,
 }: validators.FogotPasswordSchemaType) => {
   const supabase = await createServerClient()
+  const redirectTo = `${getURL()}nova-senha`
+
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${getURL()}nova-senha`,
+    redirectTo,
   })
 
   if (error) {
