@@ -1,48 +1,55 @@
-'use client'
+import { useMemo, useState } from 'react'
 
-import * as React from 'react'
+import { Command as CommandPrimitive } from 'cmdk'
 
-import { Button } from '@/components/ui/button'
 import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 
-import { ScrollArea } from './scroll-area'
+import { InputVariantProps } from './input/styles'
+import { LoadingOnButton } from './loading'
+import { Text } from './text'
 import { Icons } from '../icons'
+import { Input } from './input/index'
 
-interface SearchPopoverProps<T extends string> {
-  items: { value: string; label: string }[]
+type Props<T extends string> = InputVariantProps & {
   selectedValue: T
   onSelectedValueChange: (value: T) => void
   searchValue: string
   onSearchValueChange: (value: string) => void
-  placeholder?: string
+  items: { value: T; label: string }[]
+  isLoading?: boolean
   emptyMessage?: string
+  emptyAction?: React.ReactNode
+  placeholder?: string
+  className?: string
+  disabled?: boolean
+  disableAutoFocus?: boolean
 }
 
 export function SearchPopover<T extends string>({
-  items,
+  disabled,
   selectedValue,
   onSelectedValueChange,
   searchValue,
   onSearchValueChange,
-  placeholder = 'Buscar item...',
+  items,
+  isLoading,
   emptyMessage = 'Nenhum item encontrado.',
-}: SearchPopoverProps<T>) {
-  const [open, setOpen] = React.useState(false)
+  placeholder = 'Pesquisar...',
+  emptyAction,
+  disableAutoFocus = false,
+}: Props<T>) {
+  const [open, setOpen] = useState(false)
 
-  const labels = React.useMemo(
+  const labels = useMemo(
     () =>
       items.reduce(
         (acc, item) => {
@@ -51,7 +58,6 @@ export function SearchPopover<T extends string>({
         },
         {} as Record<string, string>,
       ),
-
     [items],
   )
 
@@ -67,57 +73,95 @@ export function SearchPopover<T extends string>({
       onSelectedValueChange(inputValue as T)
       onSearchValueChange(labels[inputValue] ?? '')
     }
-
     setOpen(false)
   }
 
+  const handleFocus = () => {
+    if (!disableAutoFocus) {
+      setOpen(true)
+    }
+  }
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <Command shouldFilter={false}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="w-[200px] justify-start shadow-none whitespace-nowrap truncate"
-            value={searchValue}
+    <div className="flex items-center">
+      <Popover open={open} onOpenChange={setOpen}>
+        <Command shouldFilter={false}>
+          <PopoverAnchor asChild>
+            <CommandPrimitive.Input asChild>
+              <Input
+                placeholder={placeholder}
+                value={searchValue}
+                onChange={(e) => onSearchValueChange(e.target.value)}
+                onKeyDown={(e) => setOpen(e.key !== 'Escape')}
+                onMouseDown={() => setOpen((open) => !!searchValue || !open)}
+                onFocus={handleFocus}
+                disabled={disabled}
+              />
+            </CommandPrimitive.Input>
+          </PopoverAnchor>
+          {!open && <CommandList aria-hidden="true" className="hidden" />}
+          <PopoverContent
+            asChild
+            onOpenAutoFocus={(e) => e.preventDefault()}
+            onInteractOutside={(e) => {
+              if (
+                e.target instanceof Element &&
+                e.target.hasAttribute('cmdk-input')
+              ) {
+                e.preventDefault()
+              }
+            }}
+            className="w-[--radix-popover-trigger-width] p-0"
           >
-            {selectedValue
-              ? items.find((item) => item.value === selectedValue)?.label
-              : 'Selecione um item...'}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
-          <CommandInput placeholder={placeholder} />
-          <CommandList>
-            {items.length > 0 ? (
-              <CommandGroup>
-                <ScrollArea className="h-[200px]">
-                  {items.map((item) => (
-                    <CommandItem
-                      key={item.value}
-                      value={item.value}
-                      onSelect={() => onSelectItem(item.value)}
-                    >
-                      <Icons.check
-                        className={cn(
-                          'mr-2 size-4',
-                          selectedValue === item.value
-                            ? 'opacity-100'
-                            : 'opacity-0',
-                        )}
-                      />
-                      {item.label}
-                    </CommandItem>
-                  ))}
+            <CommandList>
+              {isLoading && (
+                <CommandPrimitive.Loading>
+                  <Text
+                    scale="sm"
+                    className="w-full p-1 flex items-center gap-1"
+                  >
+                    <LoadingOnButton
+                      defaultText="Carregando..."
+                      onActionText="Carregando..."
+                      isLoading={isLoading}
+                    />
+                  </Text>
+                </CommandPrimitive.Loading>
+              )}
+              {items.length > 0 && !isLoading ? (
+                <ScrollArea className="h-60">
+                  <CommandGroup>
+                    {items.map((option) => (
+                      <CommandItem
+                        key={option.value}
+                        value={option.value}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onSelect={onSelectItem}
+                      >
+                        <Icons.check
+                          className={cn(
+                            'mr-2 size-4',
+                            selectedValue === option.value
+                              ? 'opacity-100'
+                              : 'opacity-0',
+                          )}
+                        />
+                        {option.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
                 </ScrollArea>
-              </CommandGroup>
-            ) : (
-              <CommandEmpty>{emptyMessage}</CommandEmpty>
-            )}
-          </CommandList>
-        </PopoverContent>
-      </Command>
-    </Popover>
+              ) : null}
+              {!isLoading && items.length === 0 ? (
+                <CommandEmpty className="flex flex-col items-center justify-center py-4 px-2">
+                  <Text scale="sm">{emptyMessage ?? 'No items.'}</Text>
+                  {emptyAction && emptyAction}
+                </CommandEmpty>
+              ) : null}
+            </CommandList>
+          </PopoverContent>
+        </Command>
+      </Popover>
+    </div>
   )
 }

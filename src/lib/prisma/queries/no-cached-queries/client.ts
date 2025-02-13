@@ -94,7 +94,7 @@ export const getSearchClientsQuery = async (search?: string) => {
   })
 
   return clients.map((client) => ({
-    value: client.id,
     label: client.name,
+    value: client.id,
   }))
 }

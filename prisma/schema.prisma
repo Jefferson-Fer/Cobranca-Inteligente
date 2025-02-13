@@ -50,6 +50,7 @@ model Client {
 model Charge {
   id               String       @id @default(cuid())
   amount           Float
+  client_name      String
   day_tariff       Float?       @default(0)
   tariff           Float?       @default(0)
   dueDate          DateTime

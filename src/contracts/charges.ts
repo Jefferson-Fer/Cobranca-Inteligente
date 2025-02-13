@@ -11,7 +11,7 @@ export type FindChargesList = FindGenericList<ChargeFields> & {
 
 export type ChargeType = Charge
 
-export type ChargeWithCounts = Omit<Charge, 'updateAt'> & {
+export type ChargeWithCounts = Charge & {
   client: {
     name: string
   }

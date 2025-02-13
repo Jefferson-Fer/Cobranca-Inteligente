@@ -56,6 +56,14 @@ export const getSearchClients = async (search?: string) => {
   return clients
 }
 
+export const getChargeById = async (id: string) => {
+  'use cache'
+  cacheTag('charge' + id)
+  const charge = await Queries.getChargeByIdQuery(id)
+
+  return charge
+}
+
 export const getChargesByProfile = async (
   params: FindChargesList,
   profileId: string,

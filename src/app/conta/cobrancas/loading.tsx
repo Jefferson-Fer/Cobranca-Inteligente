@@ -4,15 +4,13 @@ import { PageHeader } from '@/components/page-header'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 
-const title = 'Clientes'
-const description = 'Lista de clientes'
-
-export default function ClientesLoading() {
+export default async function ChargeLoading() {
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <PageHeader
-        {...{ title, description }}
-        breadcrumbLinks={['dashboard', 'costumers']}
+        title="Cobrancas"
+        description="Gerencie suas cobranças"
+        breadcrumbLinks={['dashboard', 'charges']}
         icon="placeholder"
       >
         <Button className="w-[200px]">
@@ -22,6 +20,6 @@ export default function ClientesLoading() {
       </PageHeader>
 
       <DataTableLoading columnCount={5} />
-    </>
+    </div>
   )
 }

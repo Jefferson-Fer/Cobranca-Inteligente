@@ -3,6 +3,7 @@
 import { useState } from 'react'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import dayjs from 'dayjs'
 import { useStateAction } from 'next-safe-action/stateful-hooks'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -12,16 +13,6 @@ import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { DatePickerSingle } from '@/components/ui/date-picker-single'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import {
   Form,
   FormLabel,
   FormItem,
@@ -29,10 +20,21 @@ import {
   FormField,
   FormControl,
 } from '@/components/ui/form'
-import { InputMoney } from '@/components/ui/input-money'
+import InputCurrency from '@/components/ui/input-currency'
 import { LoadingOnButton } from '@/components/ui/loading'
 import { SearchPopover } from '@/components/ui/search-popover'
+import {
+  Sheet,
+  SheetDescription,
+  SheetTitle,
+  SheetHeader,
+  SheetContent,
+  SheetTrigger,
+  SheetFooter,
+  SheetClose,
+} from '@/components/ui/sheet'
 import { Textarea } from '@/components/ui/textarea'
+import { useDebounce } from '@/hooks/use-debounce'
 import { useGetClientsOptions } from '@/lib/react-query/queries/charge-queries'
 import { chargeSchema, ChargeSchemaType } from '@/validators/charge-validator'
 
@@ -41,6 +43,9 @@ export default function NewChargeModal() {
 
   const formMethods = useForm<ChargeSchemaType>({
     resolver: zodResolver(chargeSchema),
+    defaultValues: {
+      amount: 0,
+    },
   })
 
   const { execute, isPending } = useStateAction(createChargeAction, {
@@ -65,32 +70,32 @@ export default function NewChargeModal() {
   } = formMethods
 
   const [searchClient, setSearchClient] = useState('')
-  //const [debouncedSearchClient] = useDebounce(searchClient, 400)
+  const debouncedSearchClient = useDebounce(searchClient, 400)
 
-  const { data: clients } = useGetClientsOptions(searchClient)
+  const { data: clients } = useGetClientsOptions(debouncedSearchClient)
 
   const handleCreateCharge = (data: ChargeSchemaType) => {
-    console.log(data)
-    execute(data)
+    execute({
+      ...data,
+      client_name: searchClient,
+    })
   }
 
-  console.log('clients', clients)
-
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
         <Button>
           <Icons.new />
         </Button>
-      </DialogTrigger>
+      </SheetTrigger>
 
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Adicionar cobrança</DialogTitle>
-        </DialogHeader>
-        <DialogDescription className="sr-only">
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Adicionar cobrança</SheetTitle>
+        </SheetHeader>
+        <SheetDescription className="sr-only">
           Adicione uma nova cobrança para gerenciar suas contas e transações.
-        </DialogDescription>
+        </SheetDescription>
         <Form {...formMethods}>
           <form
             onSubmit={handleSubmit(handleCreateCharge)}
@@ -107,18 +112,18 @@ export default function NewChargeModal() {
                   searchValue={searchClient}
                   onSearchValueChange={setSearchClient}
                   items={clients ?? []}
+                  isLoading={false}
                 />
                 <FormMessage>
                   {formMethods.formState.errors.clientId?.message}
                 </FormMessage>
               </FormItem>
-              <FormItem>
-                <FormLabel className="font-bold flex items-center justify-between">
-                  Valor
-                </FormLabel>
-                <InputMoney name="amount" placeholder="ex: 100,00" />
-                <FormMessage>{errors.amount?.message}</FormMessage>
-              </FormItem>
+
+              <InputCurrency
+                label="Valor"
+                name="amount"
+                placeholder="R$ 0,00"
+              />
             </div>
             <FormItem className="space-y-3">
               <FormLabel className="font-bold flex items-center justify-between">
@@ -126,30 +131,30 @@ export default function NewChargeModal() {
               </FormLabel>
 
               <DatePickerSingle
-                value={undefined}
+                value={watch('dueDate')?.toISOString()}
                 onChange={(value) => {
-                  setValue('dueDate', value ? new Date(value) : new Date())
+                  setValue(
+                    'dueDate',
+                    value ? dayjs(new Date(value)).toDate() : new Date(),
+                  )
                 }}
                 className="w-full"
               />
 
               <FormMessage>{errors.dueDate?.message}</FormMessage>
             </FormItem>
-            <div className="grid grid-cols-2 gap-4">
-              <FormItem>
-                <FormLabel className="font-bold flex items-center justify-between">
-                  Tarifa mensal
-                </FormLabel>
-                <InputMoney name="tariff" placeholder="ex: 100,00" />
-                <FormMessage>{errors.tariff?.message}</FormMessage>
-              </FormItem>
-              <FormItem>
-                <FormLabel className="font-bold flex items-center justify-between">
-                  Tarifa diária
-                </FormLabel>
-                <InputMoney name="day_tariff" placeholder="ex: 100,00" />
-                <FormMessage>{errors.day_tariff?.message}</FormMessage>
-              </FormItem>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <InputCurrency
+                label="Juros mensal"
+                name="tariff"
+                placeholder="R$ 0,00"
+              />
+              <InputCurrency
+                label="Juros diário"
+                name="day_tariff"
+                placeholder="R$ 0,00"
+              />
             </div>
 
             <FormField
@@ -174,12 +179,12 @@ export default function NewChargeModal() {
           </form>
         </Form>
 
-        <DialogFooter className="w-full flex flex-row justify-between gap-2">
-          <DialogClose asChild>
+        <SheetFooter className="w-full flex flex-row justify-between gap-2 mt-4">
+          <SheetClose asChild>
             <Button type="button" variant="outline" className="mr-auto">
               Cancelar
             </Button>
-          </DialogClose>
+          </SheetClose>
 
           <Button
             type="submit"
@@ -192,8 +197,8 @@ export default function NewChargeModal() {
               onActionText="Cadastrando..."
             />
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   )
 }

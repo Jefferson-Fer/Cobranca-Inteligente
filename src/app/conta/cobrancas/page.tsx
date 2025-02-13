@@ -11,7 +11,8 @@ import {
 } from '@/lib/prisma/queries/cached-queries'
 import { searchChargesParse } from '@/utils/search-parsers'
 
-import NewChargeModal from './_components/new-charge-modal'
+import { ChargesTableShell } from './_components/charges-shell-table'
+import NewChargeModal from './_components/new-charge-sheet'
 
 const title = 'Cobranças'
 const description = 'Lista de cobranças'
@@ -38,9 +39,7 @@ export default async function ChargesPage({
   }
 
   const { charges, count } = await getChargesByProfile(parsedParams, profile.id)
-
-  console.log('charges', charges)
-  console.log('count', count)
+  const pageCount = Math.ceil(count / parsedParams.limit)
 
   return (
     <div className="flex flex-col gap-4">
@@ -51,11 +50,14 @@ export default async function ChargesPage({
       >
         <NewChargeModal />
       </PageHeader>
-
-      <EmptyState
-        title="Nenhuma cobrança encontrada"
-        description="Crie uma cobrança para começar a gerenciar suas vendas"
-      />
+      {charges.length > 0 ? (
+        <ChargesTableShell data={charges} pageCount={pageCount} />
+      ) : (
+        <EmptyState
+          title="Nenhuma cobrança encontrada"
+          description="Crie uma cobrança para começar a gerenciar suas vendas"
+        />
+      )}
     </div>
   )
 }

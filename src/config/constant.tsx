@@ -1,4 +1,4 @@
-import { TypeClient } from '@prisma/client'
+import { StatusCharge, TypeClient } from '@prisma/client'
 
 import { BadgeVariantsType } from '@/components/ui/badge/styles'
 import { Option } from '@/contracts/commons'
@@ -25,4 +25,34 @@ export const getBadgeVariantByTypeClient: Record<
 > = {
   DEFAULTER: 'destructive',
   STANDING: 'success',
+}
+
+export const statusChargeText: Record<StatusCharge, string> = {
+  PENDING: 'Pendente',
+  PAID: 'Recebido',
+  OVERDUE: 'Atrasado',
+}
+
+export const statusChargeOptions: Option[] = [
+  {
+    label: 'Pendente',
+    value: StatusCharge.PENDING,
+  },
+  {
+    label: 'Recebido',
+    value: StatusCharge.PAID,
+  },
+  {
+    label: 'Atrasado',
+    value: StatusCharge.OVERDUE,
+  },
+]
+
+export const getBadgeVariantByStatusCharge: Record<
+  StatusCharge,
+  BadgeVariantsType['variant']
+> = {
+  PENDING: 'default',
+  PAID: 'success',
+  OVERDUE: 'destructive',
 }

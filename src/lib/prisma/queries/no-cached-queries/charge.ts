@@ -2,32 +2,9 @@ import { FindChargesList } from '@/contracts/charges'
 import { prisma } from '@/lib/prisma'
 
 export const getChargesByProfileQueryList = async (
-  {
-    limit,
-    offset,
-    column = 'createdAt',
-    fromDay,
-    order = 'desc',
-    search,
-    toDay,
-  }: FindChargesList,
+  { search }: FindChargesList,
   profileId: string,
 ) => {
-  const dayFilter =
-    fromDay && toDay
-      ? {
-          gte: fromDay,
-          lte: toDay,
-        }
-      : undefined
-
-  const orderFilter =
-    column && order
-      ? {
-          [column]: order,
-        }
-      : undefined
-
   const charges = await prisma.charge.findMany({
     include: {
       client: {
@@ -42,11 +19,7 @@ export const getChargesByProfileQueryList = async (
         name: search ? { contains: search } : undefined,
       },
       profileId,
-      createdAt: dayFilter,
     },
-    orderBy: orderFilter,
-    take: limit,
-    skip: offset,
   })
 
   const count = await prisma.charge.count({
@@ -55,11 +28,21 @@ export const getChargesByProfileQueryList = async (
         name: search ? { contains: search } : undefined,
       },
       profileId,
-      createdAt: dayFilter,
     },
-
-    orderBy: orderFilter,
   })
 
   return { charges, count }
+}
+
+export const getChargeByIdQuery = async (id: string) => {
+  return await prisma.charge.findFirst({
+    where: { id },
+    include: {
+      client: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  })
 }
