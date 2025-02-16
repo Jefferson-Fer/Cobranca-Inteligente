@@ -30,6 +30,17 @@ export default async function DashboardPage() {
 
   const { charges } = await getChargesByProfile(profile.id)
 
+  if (charges.length === 0) {
+    return (
+      <div className="flex flex-col gap-4">
+        <EmptyState
+          title="Nenhum cobrança encontrada"
+          description="Crie uma cobrança para começar a usar o sistema"
+        />
+      </div>
+    )
+  }
+
   const currentMonthCharges = charges.filter((charge) => {
     const chargeDate = new Date(charge.createdAt)
     const now = new Date()
@@ -55,20 +66,16 @@ export default async function DashboardPage() {
         currentMonthCharges={currentMonthCharges}
         previousMonthCharges={previousMonthCharges}
       />
-      {charges.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-4">
-          <SalesComparisonChart
-            charges={charges}
-            className="col-span-10 lg:col-span-6"
-          />
-          <SalesMonthCard charges={currentMonthCharges} />
-        </div>
-      ) : (
-        <EmptyState
-          title="Nenhum cobrança encontrada"
-          description="Crie uma cobrança para começar a usar o sistema"
+      <div className="grid grid-cols-1 lg:grid-cols-10 gap-4">
+        <SalesComparisonChart
+          charges={charges}
+          className="col-span-10 lg:col-span-6"
         />
-      )}
+        <SalesMonthCard
+          charges={currentMonthCharges}
+          className="col-span-10 lg:col-span-4"
+        />
+      </div>
     </div>
   )
 }

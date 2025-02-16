@@ -18,8 +18,6 @@ export const createChargeAction = authActionClient
       throw new Error('Usuário não encontrado')
     }
 
-    console.log('params', params)
-
     const charge = await createChargeQuery(params, profile.id)
 
     if (!charge) {

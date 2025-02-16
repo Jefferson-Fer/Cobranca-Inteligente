@@ -23,8 +23,6 @@ export const signInPasswordAction = actionClientWithMeta
       throw new Error('Erro ao tentar entrar. Verifique suas credenciais.')
     }
 
-    console.log(data.user)
-
     return data.user.user_metadata.role === TypeProfile.USER
       ? {
           redirectTo: '/conta',

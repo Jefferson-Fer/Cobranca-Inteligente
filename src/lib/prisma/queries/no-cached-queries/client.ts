@@ -86,10 +86,14 @@ export const getClientsByProfileDefaultersQuery = async (
   return { clients, count }
 }
 
-export const getSearchClientsQuery = async (search?: string) => {
+export const getSearchClientsQuery = async (
+  search?: string,
+  profileId?: string,
+) => {
   const clients = await prisma.client.findMany({
     where: {
       name: search ? { contains: search, mode: 'insensitive' } : undefined,
+      profileId: profileId,
     },
   })
 

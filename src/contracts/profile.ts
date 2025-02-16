@@ -1,4 +1,4 @@
-import { Prisma, TypeProfile } from '@prisma/client'
+import { Prisma, Profile, TypeProfile } from '@prisma/client'
 
 import { CreateProfileSchemaType } from '@/validators'
 
@@ -24,3 +24,5 @@ export type CreateUserProfilePayload = Omit<
 > & {
   userId: string
 }
+
+export type ProfileWithUser = Profile

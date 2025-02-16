@@ -11,7 +11,6 @@ export const signUpConfirmationAction = actionClientWithMeta
     name: 'Sign Up Confirmation',
   })
   .stateAction(async ({ parsedInput: params }) => {
-    console.log('params', params)
     await signUpConfirmationQuery(params)
 
     return { redirectTo: `${getURL()}sign-in` }

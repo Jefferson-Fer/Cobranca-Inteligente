@@ -29,8 +29,6 @@ export const recoverPasswordQuery = async ({
 }: validators.RecoverPasswordSchemaType) => {
   const cookies = await cookiesHeaders()
 
-  console.log('password', password)
-
   const supabase = await createServerClient({ admin: true })
   const redirectTo = '/sign-in'
   const userId = cookies.get('tmp_user_id')?.value

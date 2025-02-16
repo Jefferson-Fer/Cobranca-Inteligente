@@ -33,12 +33,17 @@ import {
   SheetFooter,
   SheetClose,
 } from '@/components/ui/sheet'
+import { Text } from '@/components/ui/text'
 import { Textarea } from '@/components/ui/textarea'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useGetClientsOptions } from '@/lib/react-query/queries/charge-queries'
 import { chargeSchema, ChargeSchemaType } from '@/validators/charge-validator'
 
-export default function NewChargeModal() {
+interface NewChargeModalProps {
+  profileId: string
+}
+
+export default function NewChargeModal({ profileId }: NewChargeModalProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const formMethods = useForm<ChargeSchemaType>({
@@ -72,7 +77,10 @@ export default function NewChargeModal() {
   const [searchClient, setSearchClient] = useState('')
   const debouncedSearchClient = useDebounce(searchClient, 400)
 
-  const { data: clients } = useGetClientsOptions(debouncedSearchClient)
+  const { data: clients } = useGetClientsOptions(
+    debouncedSearchClient,
+    profileId,
+  )
 
   const handleCreateCharge = (data: ChargeSchemaType) => {
     execute({
@@ -83,11 +91,14 @@ export default function NewChargeModal() {
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button>
-          <Icons.new />
-        </Button>
-      </SheetTrigger>
+      <div className="w-full flex justify-end">
+        <SheetTrigger asChild>
+          <Button className="w-[200px]">
+            <Icons.new className="size-4" />
+            <Text variant="white">Adicionar</Text>
+          </Button>
+        </SheetTrigger>
+      </div>
 
       <SheetContent>
         <SheetHeader>

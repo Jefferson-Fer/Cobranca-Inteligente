@@ -46,9 +46,9 @@ export default async function ChargesPage({
       <PageHeader
         {...{ title, description }}
         breadcrumbLinks={['dashboard', 'charges']}
-        icon="placeholder"
+        icon="money"
       >
-        <NewChargeModal />
+        <NewChargeModal profileId={profile.id} />
       </PageHeader>
       {charges.length > 0 ? (
         <ChargesTableShell data={charges} pageCount={pageCount} />

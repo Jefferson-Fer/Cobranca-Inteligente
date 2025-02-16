@@ -37,3 +37,7 @@ export const getProfileQuery = async (
     preferences: {},
   }
 }
+
+export const getAllProfilesQuery = async () => {
+  return prisma.profile.findMany()
+}

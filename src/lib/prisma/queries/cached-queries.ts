@@ -39,6 +39,14 @@ export const getProfile = async () => {
   return profile
 }
 
+export const getAllProfiles = async () => {
+  'use cache'
+  cacheTag('profiles')
+  const profiles = await Queries.getAllProfilesQuery()
+
+  return profiles
+}
+
 export const getClientsByProfile = async (profileId: string) => {
   'use cache'
   cacheTag('clients' + profileId)
@@ -47,10 +55,10 @@ export const getClientsByProfile = async (profileId: string) => {
   return clients
 }
 
-export const getSearchClients = async (search?: string) => {
+export const getSearchClients = async (search?: string, profileId?: string) => {
   'use cache'
-  cacheTag('clients')
-  const clients = await Queries.getSearchClientsQuery(search)
+  cacheTag('clients' + profileId)
+  const clients = await Queries.getSearchClientsQuery(search, profileId)
 
   return clients
 }

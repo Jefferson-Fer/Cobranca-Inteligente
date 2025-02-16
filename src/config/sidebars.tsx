@@ -20,50 +20,14 @@ export type NewSidebarLink = {
 
 export const sidebarOdin: NewSidebarLink[] = [
   {
+    title: 'Dashboard',
+    url: '/',
+    icon: 'home',
+  },
+  {
     title: 'Usuários',
-    url: '#',
-    icon: 'costumers',
-    items: [
-      {
-        title: 'Listagem',
-        url: '/users',
-        icon: 'list',
-      },
-      {
-        title: 'Ativos',
-        url: '/users/active',
-        icon: 'user_active',
-      },
-      {
-        title: 'Inativos',
-        url: '/users/inactive',
-        icon: 'user_inactive',
-      },
-    ],
-  },
-  {
-    title: 'Relatórios',
-    url: '#',
-    icon: 'barChart',
-    items: [
-      {
-        title: 'Listagem',
-        url: '/reports',
-        icon: 'list',
-      },
-    ],
-  },
-  {
-    title: 'Configurações',
-    url: '#',
-    icon: 'settings',
-    items: [
-      {
-        title: 'Listagem',
-        url: '/settings',
-        icon: 'list',
-      },
-    ],
+    url: '/users',
+    icon: 'user',
   },
 ]
 

@@ -47,7 +47,7 @@ export default async function ClientesPage({
       <PageHeader
         {...{ title, description }}
         breadcrumbLinks={['dashboard', 'costumers']}
-        icon="placeholder"
+        icon="costumers"
       >
         <NewUserModal />
       </PageHeader>

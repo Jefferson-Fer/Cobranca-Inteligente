@@ -23,8 +23,6 @@ export default async function OdinLayout({ children }: OdinLayoutProps) {
     return redirect('/')
   }
 
-  console.log(profile)
-
   const { theme } = (profile.preferences as PreferencesType) ?? {}
 
   return (
