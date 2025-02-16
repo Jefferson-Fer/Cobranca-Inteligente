@@ -29,11 +29,9 @@ export default function CardInfo({
 }: CardInfoProps) {
   return (
     <Card className={cn('w-full rounded-md', className)}>
-      <CardHeader>
+      <CardHeader className="space-y-0">
         <CardTitle className="flex items-center justify-between gap-2">
-          <Text scale={'lg'} weight={'bold'}>
-            {title}
-          </Text>
+          <Text weight={'semibold'}>{title}</Text>
           {icon && React.createElement(Icons[icon], { className: 'size-4' })}
         </CardTitle>
         {description && <CardDescription>{description}</CardDescription>}

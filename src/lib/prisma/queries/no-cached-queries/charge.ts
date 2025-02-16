@@ -1,10 +1,6 @@
-import { FindChargesList } from '@/contracts/charges'
 import { prisma } from '@/lib/prisma'
 
-export const getChargesByProfileQueryList = async (
-  { search }: FindChargesList,
-  profileId: string,
-) => {
+export const getChargesByProfileQueryList = async (profileId: string) => {
   const charges = await prisma.charge.findMany({
     include: {
       client: {
@@ -15,18 +11,16 @@ export const getChargesByProfileQueryList = async (
     },
 
     where: {
-      client: {
-        name: search ? { contains: search } : undefined,
-      },
       profileId,
+    },
+
+    orderBy: {
+      createdAt: 'desc',
     },
   })
 
   const count = await prisma.charge.count({
     where: {
-      client: {
-        name: search ? { contains: search } : undefined,
-      },
       profileId,
     },
   })

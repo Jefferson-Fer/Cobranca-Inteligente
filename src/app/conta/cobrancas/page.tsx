@@ -38,7 +38,7 @@ export default async function ChargesPage({
     return redirect('/sign-in')
   }
 
-  const { charges, count } = await getChargesByProfile(parsedParams, profile.id)
+  const { charges, count } = await getChargesByProfile(profile.id)
   const pageCount = Math.ceil(count / parsedParams.limit)
 
   return (

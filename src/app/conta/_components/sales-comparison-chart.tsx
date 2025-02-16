@@ -1,43 +1,55 @@
 'use client'
 
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
 import CardInfo from '@/components/card-info'
 import {
   ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import { ChargeWithCounts } from '@/contracts/charges'
 import { cn } from '@/lib/utils'
 
-const chartData = [
-  { month: 'January', desktop: 186, mobile: 80 },
-  { month: 'February', desktop: 305, mobile: 200 },
-  { month: 'March', desktop: 237, mobile: 120 },
-  { month: 'April', desktop: 73, mobile: 190 },
-  { month: 'May', desktop: 209, mobile: 130 },
-  { month: 'June', desktop: 214, mobile: 140 },
-]
-
 const chartConfig = {
-  desktop: {
-    label: 'Desktop',
+  vendas: {
+    label: 'Vendas',
     color: '#2563eb',
-  },
-  mobile: {
-    label: 'Mobile',
-    color: '#60a5fa',
   },
 } satisfies ChartConfig
 
 interface SalesComparisonChartProps {
+  charges: ChargeWithCounts[]
   className?: string
 }
 
-export function SalesComparisonChart({ className }: SalesComparisonChartProps) {
+export default function SalesComparisonChart({
+  charges,
+  className,
+}: SalesComparisonChartProps) {
+  const chartData = charges.reduce(
+    (acc, charge) => {
+      const month = new Date(charge.createdAt).toLocaleString('default', {
+        month: 'short',
+      })
+      const existingMonth = acc.find((item) => item.month === month)
+      if (existingMonth) {
+        existingMonth.vendas += charge.total_value
+      } else {
+        acc.push({ month, vendas: charge.total_value })
+      }
+      return acc
+    },
+    [] as { month: string; vendas: number }[],
+  )
+
+  if (chartData.length < 6) {
+    addMonthsArray(chartData)
+  } else {
+    chartData.reverse()
+  }
+
   return (
     <CardInfo title="Visão geral" className={cn(className)}>
       <ChartContainer
@@ -53,12 +65,49 @@ export function SalesComparisonChart({ className }: SalesComparisonChartProps) {
             axisLine={false}
             tickFormatter={(value) => value.slice(0, 3)}
           />
+          <YAxis
+            dataKey="vendas"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={10}
+          />
           <ChartTooltip content={<ChartTooltipContent />} />
-          <ChartLegend content={<ChartLegendContent />} />
-          <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-          <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
+          <Bar dataKey="vendas" fill="var(--color-background)" radius={4} />
         </BarChart>
       </ChartContainer>
     </CardInfo>
   )
+}
+
+const addMonthsArray = (chartData: { month: string; vendas: number }[]) => {
+  const allMonths = [
+    'jan.',
+    'fev.',
+    'mar.',
+    'abr.',
+    'mai.',
+    'jun.',
+    'jul.',
+    'ago.',
+    'set.',
+    'out.',
+    'nov.',
+    'dez.',
+  ]
+  const currentMonthIndex = new Date().getMonth()
+  const lastSixMonths = []
+
+  const monthsToAdd = 6 - chartData.length
+  for (let i = 0; i < monthsToAdd; i++) {
+    const monthIndex = (currentMonthIndex - i - chartData.length + 12) % 12
+    lastSixMonths.push(allMonths[monthIndex])
+  }
+
+  lastSixMonths.forEach((month) => {
+    if (!chartData.find((item) => item.month === month)) {
+      chartData.push({ month, vendas: 0 })
+    }
+  })
+
+  chartData.reverse()
 }
