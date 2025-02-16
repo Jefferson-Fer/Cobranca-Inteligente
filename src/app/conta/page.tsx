@@ -12,8 +12,8 @@ import InfoCards from './_components/info-cards'
 import SalesComparisonChart from './_components/sales-comparison-chart'
 import SalesMonthCard from './_components/sales-month-card'
 
-const title = 'Clientes'
-const description = 'Lista de clientes'
+const title = 'Dashboard'
+const description = 'Informações gerais do sistema'
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
